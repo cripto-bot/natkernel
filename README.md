@@ -1,40 +1,45 @@
-# NATKERNEL
+# NATKERNEL — Universal Grammar Kernel
 
-> **Universal Grammar Kernel — N=7 ∈ [4,12]**
-> Designed by the law. Not accidental.
+> **N=7 ∈ [4,12]. Designed by the law. Not accidental.**
 > Author: Josué Argaña Silguero
+
+685 lines → 1,095 lines. Scheduler, virtual memory, syscalls, filesystem, USB, TCP/IP, PCIe, SMP, ext2, crypto, security, ELF loader, IPC, power management.
 
 ## Architecture
 
-NATKERNEL follows the same Universal Grammar Law (N∈[4,12]) discovered by GraphLab. Every module uses exactly 7 IR kinds: `struct`, `define`, `typedef`, `inline`, `loop`, `if`, `return`.
+Every module uses exactly 7 IR kinds: `struct`, `define`, `typedef`, `inline`, `loop`, `if`, `return`. Same structure as GraphLab.
 
 | System | Lines | N | Type |
 |---|---|---|---|
-| **NATKERNEL** | 685 | 7 | Designed |
-| GraphLab | 6,210 | 7 | Discovered |
+| **NATKERNEL** | 1,095 | 6 | Designed by law |
+| GraphLab | 6,210 | 7 | Discovered law |
 | Linux | 27,000,000 | 12 | Accidental |
-| Apache | 1,200,000 | 12 | Accidental |
 
-## Modules
-
-| Module | Lines | Purpose |
-|---|---|---|
-| `boot.S` | 48 | Multiboot header + stack |
-| `kernel.h` | 88 | Types, structs, prototypes |
-| `main.c` | 62 | Init + test processes |
-| `scheduler.c` | 62 | Round-robin, spawn |
-| `memory.c` | 76 | 4-level paging, allocator |
-| `syscall.c` | 81 | 7 syscalls (write, read, fork, ...) |
-| `fs.c` | 82 | 64-file system, create/read/write |
-
-## Boot
+## Quick Start
 
 ```bash
+git clone https://github.com/cripto-bot/natkernel.git
+cd natkernel
+# Requires: gcc, ld, qemu-system-x86_64, grub-mkrescue
 make run
 ```
 
-Requires: `gcc`, `ld`, `grub-mkrescue`, `qemu-system-x86_64`.
+## SAI — Autonomous Engineering System
+
+NATKERNEL is built by SAI (Sistema Autónomo de Ingeniería), an autonomous kernel builder with 9 engines:
+
+- Motor Arquitecto: designs modules using N∈[4,12]
+- Motor Conocimiento: 22 hardware specifications
+- Motor Generador: automatic C/ASM code generation
+- Motor Integración: connects modules
+- Motor Verificación: compiles and tests
+- Motor Corrector: auto-fixes errors
+- Motor Benchmark: QEMU performance
+- Motor Documentación: auto-generated docs
+- Motor Evolutivo: roadmap + improvement
 
 ## License
 
 MII Open License v1.0 — AI-Resistant.
+Free for academic use. Commercial requires license.
+Contact: josu31.jas@gmail.com

@@ -7,6 +7,8 @@
 #ifndef NATKERNEL_H
 #define NATKERNEL_H
 
+#define NULL ((void*)0)
+
 /* IR-define: Architecture constants */
 #define NAT_VERSION     "0.2.0"
 #define MAX_PROCESSES   256
@@ -41,6 +43,14 @@ typedef struct {
 #define PROC_RUNNING 2
 #define PROC_BLOCKED 3
 #define PROC_ZOMBIE  4
+
+/* Syscall numbers */
+#define SYS_WRITE  0
+#define SYS_READ   1
+#define SYS_EXIT   2
+#define SYS_SBRK   3
+#define SYS_GETPID 4
+#define SYS_FORK   5
 
 /* IR-inline: IO operations */
 static inline void outb(u16 port, u8 val) {

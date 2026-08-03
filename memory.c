@@ -47,10 +47,10 @@ void free_page(u64 addr) {
 }
 
 void map_page(u64 vaddr, u64 paddr, u64 flags) {
-    u64 l4 = (vaddr >> 39) & 0x1FF;
-    u64 l3 = (vaddr >> 30) & 0x1FF;
-    u64 l2 = (vaddr >> 21) & 0x1FF;
-    u64 l1 = (vaddr >> 12) & 0x1FF;
+    u64 l4 = (vaddr >> 39) & 0x1FFULL;
+    u64 l3 = (vaddr >> 30) & 0x1FFULL;
+    u64 l2 = (vaddr >> 21) & 0x1FFULL;
+    u64 l1 = (vaddr >> 12) & 0x1FFULL;
     
     if (kernel_pml4.entries[l4] == 0) {
         u64 new_pt = alloc_page();
