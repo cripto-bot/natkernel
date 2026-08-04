@@ -1,21 +1,33 @@
-MIT License
+Business Source License 1.1
 
 Copyright (c) 2026 Josué Argaña Silguero
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Licensed Work:        NATKERNEL v4.0
+Additional Use Grant: None
+Change Date:          2030-01-01
+Change License:       GNU General Public License v3.0
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Terms:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+The Licensed Work is provided under the terms of the Business Source License 1.1.
+You may use the Licensed Work for non-commercial purposes, including personal use,
+educational use, and research, without charge.
+
+Commercial use of the Licensed Work requires a separate commercial license agreement
+with the Licensor. "Commercial use" means any use that is primarily intended for or
+directed toward commercial advantage or monetary compensation, including but not
+limited to:
+
+  a) Using the Software to provide services to third parties
+  b) Incorporating the Software into a commercial product
+  c) Using the Software within an organization for business operations
+  d) Distributing the Software as part of a paid offering
+
+For commercial licensing, contact:
+  Email: josu31.jas@gmail.com
+  Author: Josué Argaña Silguero
+
+On the Change Date specified above, this Software will automatically become available
+under the terms of the GNU General Public License v3.0.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
